@@ -1,36 +1,36 @@
-function getWeather() {
-    const city = document.getElementById("cityInput").value;
-    const apiKey = "YOUR_API_KEY"; // Replace with your real OpenWeather API key
+async function getWeather() {
+  const city = document.getElementById("cityInput").value.trim();
+  const apiKey = "YOUR_API_KEY"; // Replace with your actual key
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
-    if (city === "") {
-        alert("Please enter a city name");
-        return;
+  const weatherDisplay = document.getElementById("weatherDisplay");
+
+  if (!city) {
+    weatherDisplay.innerHTML = "<p>Please enter a city name.</p>";
+    return;
+  }
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("City not found");
     }
+    const data = await response.json();
 
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+    const temperature = data.main.temp;
+    const cityName = data.name;
+    const condition = data.weather[0].description;
+    const date = new Date();
+    const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const day = date.toLocaleDateString('en-US', { weekday: 'long' });
 
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("City not found");
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log(data); // for debugging
-            const weatherDisplay = document.getElementById("weatherDisplay");
-            weatherDisplay.innerHTML = `
-                <h2>${data.name}</h2>
-                <p>${data.weather[0].main} (${data.weather[0].description})</p>
-                <p>Temperature: ${data.main.temp}°C</p>
-                <p>Feels like: ${data.main.feels_like}°C</p>
-                <p>Humidity: ${data.main.humidity}%</p>
-                <p>Time: ${new Date(data.dt * 1000).toLocaleTimeString()}</p>
-            `;
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            const weatherDisplay = document.getElementById("weatherDisplay");
-            weatherDisplay.innerHTML = `<p style="color:red;">${error.message}</p>`;
-        });
+    weatherDisplay.innerHTML = `
+      <h2>${Math.round(temperature)}°C</h2>
+      <p>${cityName}</p>
+      <p>${time} ${day}</p>
+      <p>${condition}</p>
+    `;
+  } catch (error) {
+    weatherDisplay.innerHTML = `<p>${error.message}</p>`;
+  }
 }
