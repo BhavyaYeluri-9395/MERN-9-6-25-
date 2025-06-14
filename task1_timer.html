@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Live Clock</title>
+</head>
+<body>
+  <p id="timeDisplay"></p>
+  <button onclick="startClock()">Click me</button>
+  <button onclick="stopClock()">stop</button>
+
+  <script>
+    let intervalID;
+
+    function updateTime() {
+      const now = new Date();
+      document.getElementById("timeDisplay").textContent = now.toString();
+    }
+
+    function startClock() {
+      if (!intervalID) {
+        updateTime(); // update immediately
+        intervalID = setInterval(updateTime, 1000);
+      }
+    }
+
+    function stopClock() {
+      clearInterval(intervalID);
+      intervalID = null;
+    }
+  </script>
+</body>
+</html>
