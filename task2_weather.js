@@ -1,40 +1,36 @@
-const API_KEY = "YOUR_API_KEY_HERE";          //  ← put your OpenWeather key here
-const URL     = "https://api.openweathermap.org/data/2.5/weather";
+function getWeather() {
+    const city = document.getElementById("cityInput").value;
+    const apiKey = "YOUR_API_KEY"; // Replace with your real OpenWeather API key
 
-const elTemp  = document.getElementById("temp");
-const elCity  = document.getElementById("city");
-const elDesc  = document.getElementById("desc");
-const elClock = document.getElementById("clock");
-const cityInp = document.getElementById("cityInput");
-const btn     = document.getElementById("searchBtn");
+    if (city === "") {
+        alert("Please enter a city name");
+        return;
+    }
 
-btn.addEventListener("click", () => {
-  const city = cityInp.value.trim();
-  if (city) fetchWeather(city);
-});
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
-// call default city at start (optional)
-fetchWeather("Bhopal");
-
-function fetchWeather(city) {
-  const query = `${URL}?q=${encodeURIComponent(city)}&units=metric&appid=${API_KEY}`;
-  fetch(query)
-    .then(res => {
-      if (!res.ok) throw new Error("City not found");
-      return res.json();
-    })
-    .then(data => showWeather(data))
-    .catch(err => alert(err.message));
-}
-
-function showWeather(data) {
-  // main readings
-  elTemp.textContent = Math.round(data.main.temp);
-  elCity.textContent = data.name;
-  elDesc.textContent = data.weather[0].description;
-
-  // local time using timezone offset (seconds → ms)
-  const localMs   = Date.now() + data.timezone * 1000;
-  const options   = { hour: "2-digit", minute: "2-digit", weekday: "long" };
-  elClock.textContent = new Date(localMs).toLocaleTimeString("en-US", options);
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("City not found");
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data); // for debugging
+            const weatherDisplay = document.getElementById("weatherDisplay");
+            weatherDisplay.innerHTML = `
+                <h2>${data.name}</h2>
+                <p>${data.weather[0].main} (${data.weather[0].description})</p>
+                <p>Temperature: ${data.main.temp}°C</p>
+                <p>Feels like: ${data.main.feels_like}°C</p>
+                <p>Humidity: ${data.main.humidity}%</p>
+                <p>Time: ${new Date(data.dt * 1000).toLocaleTimeString()}</p>
+            `;
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            const weatherDisplay = document.getElementById("weatherDisplay");
+            weatherDisplay.innerHTML = `<p style="color:red;">${error.message}</p>`;
+        });
 }
