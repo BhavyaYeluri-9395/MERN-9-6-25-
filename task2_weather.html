@@ -2,15 +2,18 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Weather App</title>
   <link rel="stylesheet" href="task2_weather.css">
 </head>
 <body>
-  <h1>Weather App</h1>
-  <input type="text" id="cityInput" placeholder="Enter city name">
-  <button onclick="getWeather()">Search Button</button>
+  <div class="container">
+    <h1>Weather App</h1>
+    <input type="text" id="cityInput" placeholder="Enter city name">
+    <button onclick="getWeather()">Search Button</button>
 
-  <div id="weatherDisplay"></div>
+    <div id="weatherDisplay" class="weather-box"></div>
+  </div>
 
   <script src="task2_weather.js"></script>
 </body>
